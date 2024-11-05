@@ -1,3 +1,4 @@
 *.history*
 secrets.txt
 token.txt
+questions.json
