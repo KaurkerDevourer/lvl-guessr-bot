@@ -1,4 +1,5 @@
 *.history*
-secrets.txt
 token.txt
-questions.json
+db/questions.json
+.idea/
+internal/__pycache__/
