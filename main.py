@@ -8,6 +8,10 @@ with open("token.txt") as file:
     token = file.readline().strip('\n')
 bot = telebot.TeleBot(token)
 
+with open("questions.json") as file:
+    questions = json.load(file)
+
+
 users_states = {}
 
 def get_next_question_id(user_id) -> int:
@@ -25,12 +29,10 @@ def get_question_by_id(question_id) -> json:
         "author": string
     }
     """
-    with open("questions.json") as file:
-        questions = json.load(file) # TODO: нет,не стоит грузить весь файл в память
-        if question_id >= len(questions):
-            print("No more questions")
-            return None
-        return questions[question_id]
+    if question_id >= len(questions):
+        print("There is no question with id:", question_id)
+        return None
+    return questions[question_id]
 
 @bot.message_handler(commands=['guess'])
 def start_the_game(message):
