@@ -57,13 +57,15 @@ def start_the_game(message):
         btn1 = types.KeyboardButton('Junior')
         btn2 = types.KeyboardButton('Middle')
         btn3 = types.KeyboardButton('Senior')
+        btn4 = types.KeyboardButton('Lead')
     else:
         btn1 = types.KeyboardButton('0-1 years')
         btn2 = types.KeyboardButton('1-3 years')
         btn3 = types.KeyboardButton('3-6 years')
+        btn4 = types.KeyboardButton('6+ years')
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(btn1, btn2, btn3)
+    markup.add(btn1, btn2, btn3, btn4)
     bot.send_message(message.from_user.id, "Quess the level!", reply_markup=markup)
 
 @bot.message_handler(content_types=['text'])
