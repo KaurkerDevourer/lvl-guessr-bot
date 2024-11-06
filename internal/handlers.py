@@ -77,9 +77,9 @@ def answer_GTL(message, state: StateContext):
     else:
         user_statistics_storage.AddFail(user_id, Gamemode.GUESS_THE_LVL)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯." + "\n")
-    bot.send_message(user_id, f"Пояснение: o_0\n")
-    bot.send_message(user_id, f"Ссылка: {user_state["question"]["link"]}\n")
-    bot.send_message(user_id, f"Автор: {user_state["question"]["author"]}\n")
+        bot.send_message(user_id, f'Правильный ответ: {user_state["correct_answer"]}\n')
+    bot.send_message(user_id, f'Пояснение: {user_state["question"]["solution"]}\n')
+    bot.send_message(user_id, f'Ссылка: {user_state["question"]["link"]}\n')
 
     choose_next_action(message)
     state.set(GTLStates.cancel_or_not)
@@ -114,7 +114,7 @@ def guess_GTL(message, state):
         "correct_answer": question["level"]
     }
 
-    bot.send_message(message.from_user.id, question["code"])
+    bot.send_message(message.from_user.id, '```' + question["lang"] + '\n' + question["code"] + '```', parse_mode='Markdown')
 
     GTL_guess_buttons(message, state, question)
 
