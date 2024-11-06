@@ -1,10 +1,10 @@
-from internal import bot
-from internal.utils import get_next_question_id, get_question_by_id, get_data_by_id
 from telebot import types
 from telebot.states import State, StatesGroup
 from telebot.states.sync.context import StateContext
 
-from db.user_statistics import UseCase
+from internal import bot
+from internal.utils import get_next_question_id, get_question_by_id, get_data_by_id
+from internal.gamemode import Gamemode
 from . import user_statistics_storage
 
 
@@ -23,17 +23,16 @@ class HAIStates(StatesGroup):
 
 users_states = {}
 
-def finish_game(message, state: StateContext):
+def finish_the_game(message, state: StateContext):
     state.delete()
     bot.delete_state(message.from_user.id)
     markup = types.ReplyKeyboardRemove()
     bot.send_message(message.from_user.id, "Спасибо за игру! 🚀", reply_markup=markup)
 
-
 @bot.message_handler(state=[GTLStates.cancel_or_not, HAIStates.cancel_or_not])
 def cancel_or_not(message, state: StateContext):
     if message.text == "Нет, хватит.":
-        finish_game(message, state)
+        finish_the_game(message, state)
         return
 
     with state.data() as data:
@@ -72,16 +71,19 @@ def answer_GTL(message, state: StateContext):
         return
 
     if message.text == user_state["correct_answer"]:
-        user_statistics_storage.AddWin(user_id, UseCase.GUESS_THE_LVL)
-        bot.send_message(user_id, "Верно! 🎉\n" + user_state["question"]["link"] + "\n" + user_state["question"]["author"])
+        user_statistics_storage.AddWin(user_id, Gamemode.GUESS_THE_LVL)
+        bot.send_message(user_id, "Верно! 🎉\n")
         users_states[user_id] = None
-
-        choose_next_action(message)
-        state.set(GTLStates.cancel_or_not)
-        state.add_data(cancel_or_not = "GTL")
     else:
-        user_statistics_storage.AddFail(user_id, UseCase.GUESS_THE_LVL)
-        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
+        user_statistics_storage.AddFail(user_id, Gamemode.GUESS_THE_LVL)
+        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯." + "\n")
+    bot.send_message(user_id, f"Пояснение: o_0\n")
+    bot.send_message(user_id, f"Ссылка: {user_state["question"]["link"]}\n")
+    bot.send_message(user_id, f"Автор: {user_state["question"]["author"]}\n")
+
+    choose_next_action(message)
+    state.set(GTLStates.cancel_or_not)
+    state.add_data(cancel_or_not = "GTL")
 
 def GTL_guess_buttons(message, state: StateContext, question):
     state.set(GTLStates.answering)
@@ -99,7 +101,7 @@ def GTL_guess_buttons(message, state: StateContext, question):
 
 def guess_GTL(message, state):
     user_id = message.from_user.id
-    question_id = get_next_question_id(user_id)
+    question_id = get_next_question_id(user_id, Gamemode.GUESS_THE_LVL)
     question = get_question_by_id(question_id)
     if question == None:
         bot.send_message(user_id, "Вопросы закончились 😢")
@@ -128,16 +130,16 @@ def answer_HAI(message, state: StateContext):
 
     correct_anwer = "Человек" if hai_data["is_human"] else "Бездушная машина 🤖"
     if message.text == correct_anwer:
-        user_statistics_storage.AddWin(user_id, UseCase.AI_VS_HUMAN)
+        user_statistics_storage.AddWin(user_id, Gamemode.AI_VS_HUMAN)
         bot.send_message(user_id, "Верно! 🎉")
         users_states[user_id] = None
-
-        choose_next_action(message)
-        state.set(HAIStates.cancel_or_not)
-        state.add_data(cancel_or_not = "HAI")
     else:
-        user_statistics_storage.AddFail(user_id, UseCase.AI_VS_HUMAN)
-        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
+        user_statistics_storage.AddFail(user_id, Gamemode.AI_VS_HUMAN)
+        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯" + "\n")
+    
+    choose_next_action(message)
+    state.set(HAIStates.cancel_or_not)
+    state.add_data(cancel_or_not = "HAI")
 
 def HAI_guess_buttons(message, state: StateContext):
     state.set(HAIStates.answering)
@@ -151,7 +153,7 @@ def HAI_guess_buttons(message, state: StateContext):
 
 def guess_HAI(message, state: StateContext):
     user_id = message.from_user.id
-    question_id = get_next_question_id(user_id)
+    question_id = get_next_question_id(user_id, Gamemode.AI_VS_HUMAN)
     hai_data = get_data_by_id(question_id)
     if hai_data == None:
         bot.send_message(user_id, "Вопросы закончились 😢")
