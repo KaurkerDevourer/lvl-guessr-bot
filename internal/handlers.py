@@ -4,6 +4,10 @@ from telebot import types
 from telebot.states import State, StatesGroup
 from telebot.states.sync.context import StateContext
 
+from db.user_statistics import UseCase
+from . import user_statistics_storage
+
+
 class GameStates(StatesGroup):
     gamemode_selecting = State()
 
@@ -68,6 +72,7 @@ def answer_GTL(message, state: StateContext):
         return
 
     if message.text == user_state["correct_answer"]:
+        user_statistics_storage.AddWin(user_id, UseCase.GUESS_THE_LVL)
         bot.send_message(user_id, "Верно! 🎉\n" + user_state["question"]["link"] + "\n" + user_state["question"]["author"])
         users_states[user_id] = None
 
@@ -75,6 +80,7 @@ def answer_GTL(message, state: StateContext):
         state.set(GTLStates.cancel_or_not)
         state.add_data(cancel_or_not = "GTL")
     else:
+        user_statistics_storage.AddFail(user_id, UseCase.GUESS_THE_LVL)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
 
 def GTL_guess_buttons(message, state: StateContext, question):
@@ -122,6 +128,7 @@ def answer_HAI(message, state: StateContext):
 
     correct_anwer = "Человек" if hai_data["is_human"] else "Бездушная машина 🤖"
     if message.text == correct_anwer:
+        user_statistics_storage.AddWin(user_id, UseCase.AI_VS_HUMAN)
         bot.send_message(user_id, "Верно! 🎉")
         users_states[user_id] = None
 
@@ -129,6 +136,7 @@ def answer_HAI(message, state: StateContext):
         state.set(HAIStates.cancel_or_not)
         state.add_data(cancel_or_not = "HAI")
     else:
+        user_statistics_storage.Fail(user_id, UseCase.AI_VS_HUMAN)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
 
 def HAI_guess_buttons(message, state: StateContext):

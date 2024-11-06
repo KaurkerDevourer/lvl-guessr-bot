@@ -1,5 +1,8 @@
 *.history*
 token.txt
-db/*
+db/*.json
+db/*/*.json
+
 .idea/
-internal/__pycache__/
+*/__pycache__/
+path/*
