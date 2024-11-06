@@ -136,7 +136,7 @@ def answer_HAI(message, state: StateContext):
         state.set(HAIStates.cancel_or_not)
         state.add_data(cancel_or_not = "HAI")
     else:
-        user_statistics_storage.Fail(user_id, UseCase.AI_VS_HUMAN)
+        user_statistics_storage.AddFail(user_id, UseCase.AI_VS_HUMAN)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
 
 def HAI_guess_buttons(message, state: StateContext):
