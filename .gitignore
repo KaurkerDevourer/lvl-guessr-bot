@@ -1,5 +1,5 @@
 *.history*
 token.txt
-db/questions.json
+db/*
 .idea/
 internal/__pycache__/
