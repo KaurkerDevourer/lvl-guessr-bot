@@ -104,7 +104,7 @@ def guess_GTL(message, state):
     question_id = get_next_question_id(user_id, Gamemode.GUESS_THE_LVL)
     question = get_question_by_id(question_id)
     if question == None:
-        bot.send_message(user_id, "Вопросы закончились 😢")
+        bot.send_message(user_id, "Вы ответили на все вопросы в этом режиме! ✊")
         
         select_gamemode_message(message, state)
         return
@@ -156,7 +156,7 @@ def guess_HAI(message, state: StateContext):
     question_id = get_next_question_id(user_id, Gamemode.AI_VS_HUMAN)
     hai_data = get_data_by_id(question_id)
     if hai_data == None:
-        bot.send_message(user_id, "Вопросы закончились 😢")
+        bot.send_message(user_id, "Вы ответили на все вопросы в этом режиме! ✊")
 
         select_gamemode_message(message, state)
         return
