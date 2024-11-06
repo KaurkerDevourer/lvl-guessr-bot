@@ -1,5 +1,5 @@
 from internal import bot
-from internal.utils import get_next_question_id, get_question_by_id
+from internal.utils import get_next_question_id, get_question_by_id, get_data_by_id
 from telebot import types
 from telebot.states import State, StatesGroup
 from telebot.states.sync.context import StateContext
@@ -10,26 +10,46 @@ class GameStates(StatesGroup):
 class GTLStates(StatesGroup):
     guessing = State()
     answering = State()
-    choosing = State()
+    cancel_or_not = State()
 
-class HvsAIStates(StatesGroup):
-    choosing = State()
+class HAIStates(StatesGroup):
     guessing = State()
     answering = State()
+    cancel_or_not = State()
 
 users_states = {}
 
-@bot.message_handler(state=GTLStates.choosing)
-def choose_gtl(message, state: StateContext):
-    if message.text == "Давай дальше!":
+def finish_game(message, state: StateContext):
+    state.delete()
+    bot.delete_state(message.from_user.id)
+    markup = types.ReplyKeyboardRemove()
+    bot.send_message(message.from_user.id, "Спасибо за игру! 🚀", reply_markup=markup)
+
+
+@bot.message_handler(state=[GTLStates.cancel_or_not, HAIStates.cancel_or_not])
+def cancel_or_not(message, state: StateContext):
+    if message.text == "Нет, хватит.":
+        finish_game(message, state)
+        return
+
+    with state.data() as data:
+        # TODO:
+        # Нелогично, но стейт умеет внутри себя хранить доп. информацию
+        # Не понял, как получит state, по которому мы вызвали текущий хендлер
+        game = data.get("cancel_or_not")
+    if game == "GTL":
+        state.set(GTLStates.guessing)
         guess_GTL(message, state)
-    elif message.text == "Нет, хватит.":
-        state.set(GameStates.gamemode_selecting)
-        select_gamemode_message(message, state)
+        return
+    
+    if game == "HAI":
+        state.set(HAIStates.guessing)
+        guess_HAI(message, state)
+        return
 
-def choose_next_action(message, state: StateContext):
-    state.set(GTLStates.choosing)
+    print("WARNING: Unknown state:", state)
 
+def choose_next_action(message):
     btn1 = types.KeyboardButton('Давай дальше!')
     btn2 = types.KeyboardButton('Нет, хватит.')
 
@@ -38,23 +58,26 @@ def choose_next_action(message, state: StateContext):
     bot.send_message(message.from_user.id, "Ещё одну? 😉", reply_markup=markup)
 
 @bot.message_handler(state=GTLStates.answering)
-def answer_gtl(message, state: StateContext):
+def answer_GTL(message, state: StateContext):
     user_id = message.from_user.id
     user_state = users_states.get(user_id)
 
     if user_state == None:
+        print("WARNING: User state is None")
         bot.send_message(user_id, "Что-то пошло не так -_-")
         return
-    
+
     if message.text == user_state["correct_answer"]:
         bot.send_message(user_id, "Верно! 🎉\n" + user_state["question"]["link"] + "\n" + user_state["question"]["author"])
         users_states[user_id] = None
 
-        choose_next_action(message, state)
+        choose_next_action(message)
+        state.set(GTLStates.cancel_or_not)
+        state.add_data(cancel_or_not = "GTL")
     else:
-        bot.send_message(user_id, "Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
+        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
 
-def guess_the_level_buttons(message, state: StateContext, question):
+def GTL_guess_buttons(message, state: StateContext, question):
     state.set(GTLStates.answering)
 
     levels = ["Junior", "Middle", "Senior", "Lead"]
@@ -85,12 +108,54 @@ def guess_GTL(message, state):
 
     bot.send_message(message.from_user.id, question["code"])
 
-    guess_the_level_buttons(message, state, question)
+    GTL_guess_buttons(message, state, question)
 
-def guess_HvsAI(message, state: StateContext):
-    bot.send_message(message.from_user.id, "Not implemented yet")
-    
-    select_gamemode_message(message, state)
+@bot.message_handler(state=HAIStates.answering)
+def answer_HAI(message, state: StateContext):
+    user_id = message.from_user.id
+    hai_data = users_states.get(user_id)
+
+    if hai_data == None:
+        print("WARNING: User state is None")
+        bot.send_message(user_id, "Что-то пошло не так -_-")
+        return
+
+    correct_anwer = "Человек" if hai_data["is_human"] else "Бездушная машина 🤖"
+    if message.text == correct_anwer:
+        bot.send_message(user_id, "Верно! 🎉")
+        users_states[user_id] = None
+
+        choose_next_action(message)
+        state.set(HAIStates.cancel_or_not)
+        state.add_data(cancel_or_not = "HAI")
+    else:
+        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
+
+def HAI_guess_buttons(message, state: StateContext):
+    state.set(HAIStates.answering)
+
+    candidates = ["Человек", "Бездушная машина 🤖"]
+    buttons = [types.KeyboardButton(candidate) for candidate in candidates]
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=4)
+    markup.add(*buttons)
+
+    bot.send_message(message.from_user.id, "Угадай, человек или ИИ написал этот код?", reply_markup=markup)
+
+def guess_HAI(message, state: StateContext):
+    user_id = message.from_user.id
+    question_id = get_next_question_id(user_id)
+    hai_data = get_data_by_id(question_id)
+    if hai_data == None:
+        bot.send_message(user_id, "Вопросы закончились 😢")
+
+        select_gamemode_message(message, state)
+        return
+
+    bot.send_message(user_id, '```' + hai_data["lang"] + '\n' + hai_data["code"] + '```', parse_mode='Markdown')
+
+    users_states[user_id] = hai_data
+
+    HAI_guess_buttons(message, state)
 
 @bot.message_handler(state=GameStates.gamemode_selecting)
 def gamemode_selecting(message, state: StateContext):
@@ -100,8 +165,8 @@ def gamemode_selecting(message, state: StateContext):
         guess_GTL(message, state)
     elif message.text == "Human vs AI":
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
-        state.set(HvsAIStates.guessing)
-        guess_HvsAI(message, state)
+        state.set(HAIStates.guessing)
+        guess_HAI(message, state)
 
 def select_gamemode_message(message, state: StateContext):
     state.set(GameStates.gamemode_selecting)
