@@ -20,7 +20,7 @@ class HvsAIStates(StatesGroup):
 users_states = {}
 
 @bot.message_handler(state=GTLStates.choosing)
-def choose_gtl(message, state: StateContext):
+def choose_GTL(message, state: StateContext):
     if message.text == "Давай дальше!":
         guess_GTL(message, state)
     elif message.text == "Нет, хватит.":
@@ -38,14 +38,14 @@ def choose_next_action(message, state: StateContext):
     bot.send_message(message.from_user.id, "Ещё одну? 😉", reply_markup=markup)
 
 @bot.message_handler(state=GTLStates.answering)
-def answer_gtl(message, state: StateContext):
+def answer_GTL(message, state: StateContext):
     user_id = message.from_user.id
     user_state = users_states.get(user_id)
 
     if user_state == None:
         bot.send_message(user_id, "Что-то пошло не так -_-")
         return
-    
+
     if message.text == user_state["correct_answer"]:
         bot.send_message(user_id, "Верно! 🎉\n" + user_state["question"]["link"] + "\n" + user_state["question"]["author"])
         users_states[user_id] = None
@@ -54,7 +54,7 @@ def answer_gtl(message, state: StateContext):
     else:
         bot.send_message(user_id, "Неверно ¯\_(ツ)_/¯. Попробуй ещё раз.")
 
-def guess_the_level_buttons(message, state: StateContext, question):
+def GTL_buttons(message, state: StateContext, question):
     state.set(GTLStates.answering)
 
     levels = ["Junior", "Middle", "Senior", "Lead"]
@@ -85,9 +85,9 @@ def guess_GTL(message, state):
 
     bot.send_message(message.from_user.id, question["code"])
 
-    guess_the_level_buttons(message, state, question)
+    GTL_buttons(message, state, question)
 
-def guess_HvsAI(message, state: StateContext):
+def guess_HAI(message, state: StateContext):
     bot.send_message(message.from_user.id, "Not implemented yet")
     
     select_gamemode_message(message, state)
@@ -101,7 +101,7 @@ def gamemode_selecting(message, state: StateContext):
     elif message.text == "Human vs AI":
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(HvsAIStates.guessing)
-        guess_HvsAI(message, state)
+        guess_HAI(message, state)
 
 def select_gamemode_message(message, state: StateContext):
     state.set(GameStates.gamemode_selecting)
