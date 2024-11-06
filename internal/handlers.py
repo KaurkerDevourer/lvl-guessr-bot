@@ -19,11 +19,17 @@ class HAIStates(StatesGroup):
 
 users_states = {}
 
+def finish_game(message, state: StateContext):
+    state.delete()
+    bot.delete_state(message.from_user.id)
+    markup = types.ReplyKeyboardRemove()
+    bot.send_message(message.from_user.id, "Спасибо за игру! 🚀", reply_markup=markup)
+
+
 @bot.message_handler(state=[GTLStates.cancel_or_not, HAIStates.cancel_or_not])
 def cancel_or_not(message, state: StateContext):
     if message.text == "Нет, хватит.":
-        state.set(GameStates.gamemode_selecting)
-        select_gamemode_message(message, state)
+        finish_game(message, state)
         return
 
     with state.data() as data:
