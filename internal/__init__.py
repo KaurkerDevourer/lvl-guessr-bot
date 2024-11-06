@@ -1,5 +1,6 @@
 import telebot
 from telebot.storage import StateMemoryStorage
+from db.user_statistics import UserStatisticsStorage
 
 import json
 
@@ -13,3 +14,5 @@ with open("db/questions.json") as file:
 
 with open("db/hai/hai_db.json") as file:
     hai_db = json.load(file)
+
+user_statistics_storage = UserStatisticsStorage()
