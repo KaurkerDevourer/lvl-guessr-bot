@@ -23,8 +23,9 @@ class UserStatisticsStorage:
             self.data[user_id] = defaultdict(lambda: (0, 0), stat)
             
     def Serialize(self):
+        s = json.dumps(self.data)
         with open(self.file_name, "w") as file:
-            json.dump(self.data, file)
+            file.write(s)
 
     def AddWin(self, user_id: str, use_case: UseCase):
         """Example of a call: stat.add_win("user_id", UseCase.GUESS_THE_LVL)"""
