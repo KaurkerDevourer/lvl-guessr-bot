@@ -29,6 +29,49 @@ def finish_the_game(message, state: StateContext):
     markup = types.ReplyKeyboardRemove()
     bot.send_message(message.from_user.id, "Спасибо за игру! 🚀", reply_markup=markup)
 
+@bot.message_handler(state="*", commands=["stop"])
+def stop_game(message, state: StateContext):
+    finish_the_game(message, state)
+
+def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
+    limit = 20
+    scoreboard = user_statistics_storage.GetSorted(gamemode, limit)
+
+    scoreboard_info = ""
+    if (scoreboard == None):
+        bot.send_message(message.from_user.id, f"Рейтинг {gamemode.name} пуст! :(")
+        return
+
+    for user_id, (win, total, rank) in scoreboard:
+        if user_id == message.from_user.id:
+            scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total} <--- Here you are!\n"
+            continue
+        scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total})\n"
+
+    bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {gamemode.name}:\n{scoreboard_info}")
+
+@bot.message_handler(state="*", commands=['score'])
+def send_scoreboard(message, state: StateContext):
+    send_scoreboard_for_mode(message, Gamemode.GUESS_THE_LVL)
+    send_scoreboard_for_mode(message, Gamemode.AI_VS_HUMAN)
+
+    select_gamemode_message(message, state)
+
+def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
+    user_id = message.from_user.id
+    win, total = user_statistics_storage.Get(user_id, gamemode)
+    rank = user_statistics_storage.GetRank(user_id, gamemode)
+
+    stat_info = f"Твои успехи в {gamemode.name}: {win}/{total} (Место в рейтинге: {rank})\n"
+    bot.send_message(user_id, stat_info)
+
+@bot.message_handler(state="*", commands=['stats'])
+def send_stats(message, state: StateContext):
+    send_stats_for_mode(message, Gamemode.GUESS_THE_LVL)
+    send_stats_for_mode(message, Gamemode.AI_VS_HUMAN)
+
+    select_gamemode_message(message, state)
+
 @bot.message_handler(state=[GTLStates.cancel_or_not, HAIStates.cancel_or_not])
 def cancel_or_not(message, state: StateContext):
     if message.text == "Нет, хватит.":
@@ -38,7 +81,7 @@ def cancel_or_not(message, state: StateContext):
     with state.data() as data:
         # TODO:
         # Нелогично, но стейт умеет внутри себя хранить доп. информацию
-        # Не понял, как получит state, по которому мы вызвали текущий хендлер
+        # Не понял, как получить state, по которому мы вызвали текущий хендлер
         game = data.get("cancel_or_not")
     if game == "GTL":
         state.set(GTLStates.guessing)
