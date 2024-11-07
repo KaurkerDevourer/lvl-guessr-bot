@@ -305,9 +305,10 @@ def challenge_result(message: types.Message, state: StateContext):
     data = challenge_storage.GetChallengeResultsByChallengeId(challenge[0])
     print(data)
     scoreboard_info = ""
+    data.sort(reverse=True)
     for (result, user_id) in data:
         user_info = bot.get_chat(user_id)
-        line = f"юзернейм: {user_info.username} Результат: {result}\n"
+        line = f"{user_info.username} Результат: {result}\n"
         scoreboard_info += line
 
     bot.send_message(message.from_user.id, f"* Результат челленджа #{challenge_id} *:\n{scoreboard_info}", parse_mode='Markdown')
