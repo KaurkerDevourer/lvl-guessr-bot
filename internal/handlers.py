@@ -42,11 +42,11 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
         bot.send_message(message.from_user.id, f"Рейтинг {gamemode.name} пуст! :(")
         return
 
-    for user_id, (win, total, rank) in scoreboard:
+    for (user_id, win, total, rank) in scoreboard:
         if user_id == message.from_user.id:
             scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total} <--- Here you are!\n"
             continue
-        scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total})\n"
+        scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total}\n"
 
     bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {gamemode.name}:\n{scoreboard_info}")
 
@@ -62,6 +62,9 @@ def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
     win, total = user_statistics_storage.Get(user_id, gamemode)
     rank = user_statistics_storage.GetRank(user_id, gamemode)
 
+    if rank == None:
+        bot.send_message(user_id, f"Ты ещё не сыграл в {gamemode.name}!")
+        return
     stat_info = f"Твои успехи в {gamemode.name}: {win}/{total} (Место в рейтинге: {rank})\n"
     bot.send_message(user_id, stat_info)
 

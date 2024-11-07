@@ -2,6 +2,7 @@
 token.txt
 db/*.json
 db/*/*.json
+db/*.db
 
 .idea/
 */__pycache__/
