@@ -2,8 +2,8 @@ import json
 from . import questions, hai_db, user_statistics_storage
 from internal.gamemode import Gamemode
 
-def get_next_question_id(user_id: str, gamemode: Gamemode) -> int:
-    win, total = user_statistics_storage.Get(user_id, gamemode)
+def get_next_question_id(username: str, gamemode: Gamemode) -> int:
+    win, total = user_statistics_storage.Get(username, gamemode)
     return total  # 0-based question index
 
 def get_data_by_id(data_id: int, gamemode: Gamemode) -> json:
@@ -20,3 +20,6 @@ def get_data_by_id(data_id: int, gamemode: Gamemode) -> json:
             return None
 
         return hai_db[data_id]
+
+    print("WARNING: Unknown gamemode:", gamemode)
+    return None

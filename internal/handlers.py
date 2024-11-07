@@ -3,7 +3,7 @@ from telebot.states import State, StatesGroup
 from telebot.states.sync.context import StateContext
 
 from internal import bot
-from internal.utils import get_next_question_id, get_data_by_id, get_data_by_id
+from internal.utils import get_next_question_id, get_data_by_id
 from internal.gamemode import Gamemode
 from internal.gamemode import pretty_name
 from . import user_statistics_storage
@@ -43,11 +43,11 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
         bot.send_message(message.from_user.id, f"Рейтинг {pretty_name(gamemode)} пуст! :(")
         return
 
-    for (user_id, win, total, rank) in scoreboard:
-        if user_id == message.from_user.id:
-            scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total} <--- Here you are!\n"
+    for (username, win, total, rank) in scoreboard:
+        if username == message.from_user.username:
+            scoreboard_info += f"{rank}. @{username} {win}/{total} <--- Here you are!\n"
             continue
-        scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total}\n"
+        scoreboard_info += f"{rank}. @{username} {win}/{total}\n"
 
     bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {pretty_name(gamemode)}:\n{scoreboard_info}")
 
@@ -65,8 +65,10 @@ def send_scoreboard_without_session(message: types.Message):
 
 def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
     user_id = message.from_user.id
-    win, total = user_statistics_storage.Get(user_id, gamemode)
-    rank = user_statistics_storage.GetRank(user_id, gamemode)
+    username = message.from_user.username
+
+    win, total = user_statistics_storage.Get(username, gamemode)
+    rank = user_statistics_storage.GetRank(username, gamemode)
 
     if rank == None:
         bot.send_message(user_id, f"Ты ещё не сыграл в {pretty_name(gamemode)}!")
@@ -133,8 +135,10 @@ def choose_next_action(message: types.Message):
     bot.send_message(message.from_user.id, "Ещё одну? 😉", reply_markup=markup)
 
 @bot.message_handler(state=GTLStates.answering)
-def answer_GTL(message, state: StateContext):
+def answer_GTL(message: types.Message, state: StateContext):
     user_id = message.from_user.id
+    username = message.from_user.username
+
     gtl_data = users_states.get(user_id)
 
     if gtl_data == None:
@@ -144,11 +148,11 @@ def answer_GTL(message, state: StateContext):
 
     correct_answer = gtl_data["level"]
     if message.text == correct_answer:
-        user_statistics_storage.AddWin(user_id, Gamemode.GUESS_THE_LVL)
+        user_statistics_storage.AddWin(username, Gamemode.GUESS_THE_LVL)
         bot.send_message(user_id, "Верно! 🎉\n")
         users_states[user_id] = None
     else:
-        user_statistics_storage.AddFail(user_id, Gamemode.GUESS_THE_LVL)
+        user_statistics_storage.AddFail(username, Gamemode.GUESS_THE_LVL)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯" + "\n")
         bot.send_message(user_id, f'Правильный ответ: {correct_answer}\n')
     bot.send_message(user_id, f'Пояснение: {gtl_data["solution"]}\n')
@@ -174,7 +178,9 @@ def GTL_guess_buttons(message: types.Message, state: StateContext, question):
 
 def guess_GTL(message: types.Message, state):
     user_id = message.from_user.id
-    question_id = get_next_question_id(user_id, Gamemode.GUESS_THE_LVL)
+    username = message.from_user.username
+
+    question_id = get_next_question_id(username, Gamemode.GUESS_THE_LVL)
     data = get_data_by_id(question_id, Gamemode.GUESS_THE_LVL)
     if data == None:
         print(f"WARNING: There is no more questions for user: {message.from_user.username}")
@@ -192,6 +198,8 @@ def guess_GTL(message: types.Message, state):
 @bot.message_handler(state=HAIStates.answering)
 def answer_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
+    username = message.from_user.username
+
     hai_data = users_states.get(user_id)
 
     if hai_data == None:
@@ -201,11 +209,11 @@ def answer_HAI(message: types.Message, state: StateContext):
 
     correct_anwer = "Человек" if hai_data["is_human"] else "Бездушная машина 🤖"
     if message.text == correct_anwer:
-        user_statistics_storage.AddWin(user_id, Gamemode.GUESS_HUMAN_OR_AI)
+        user_statistics_storage.AddWin(username, Gamemode.GUESS_HUMAN_OR_AI)
         bot.send_message(user_id, "Верно! 🎉")
         users_states[user_id] = None
     else:
-        user_statistics_storage.AddFail(user_id, Gamemode.GUESS_HUMAN_OR_AI)
+        user_statistics_storage.AddFail(username, Gamemode.GUESS_HUMAN_OR_AI)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯" + "\n")
 
     choose_next_action(message)
@@ -224,7 +232,9 @@ def HAI_guess_buttons(message: types.Message, state: StateContext):
 
 def guess_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
-    question_id = get_next_question_id(user_id, Gamemode.GUESS_HUMAN_OR_AI)
+    username = message.from_user.username
+
+    question_id = get_next_question_id(username, Gamemode.GUESS_HUMAN_OR_AI)
     data = get_data_by_id(question_id, Gamemode.GUESS_HUMAN_OR_AI)
     if data == None:
         print(f"WARNING: There is no more questions for user: {message.from_user.username}")
