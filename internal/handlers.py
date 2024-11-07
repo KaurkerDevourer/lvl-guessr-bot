@@ -83,16 +83,13 @@ def cancel_or_not(message: types.Message, state: StateContext):
         return
 
     with state.data() as data:
-        # TODO:
-        # Нелогично, но стейт умеет внутри себя хранить доп. информацию
-        # Не понял, как получить state, по которому мы вызвали текущий хендлер
-        game = data.get("cancel_or_not")
-    if game == "GTL":
+        gamemode_type = data.get("cancel_or_not")
+    if gamemode_type == Gamemode.GUESS_THE_LVL:
         state.set(GTLStates.guessing)
         guess_GTL(message, state)
         return
     
-    if game == "HAI":
+    if gamemode_type == Gamemode.GUESS_HUMAN_OR_AI:
         state.set(HAIStates.guessing)
         guess_HAI(message, state)
         return
@@ -131,7 +128,7 @@ def answer_GTL(message, state: StateContext):
 
     choose_next_action(message)
     state.set(GTLStates.cancel_or_not)
-    state.add_data(cancel_or_not = "GTL")
+    state.add_data(cancel_or_not = Gamemode.GUESS_THE_LVL)
 
 def GTL_guess_buttons(message: types.Message, state: StateContext, question):
     state.set(GTLStates.answering)
@@ -185,7 +182,7 @@ def answer_HAI(message: types.Message, state: StateContext):
 
     choose_next_action(message)
     state.set(HAIStates.cancel_or_not)
-    state.add_data(cancel_or_not = "HAI")
+    state.add_data(cancel_or_not = Gamemode.GUESS_HUMAN_OR_AI)
 
 def HAI_guess_buttons(message: types.Message, state: StateContext):
     state.set(HAIStates.answering)
