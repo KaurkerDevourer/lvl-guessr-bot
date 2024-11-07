@@ -54,7 +54,7 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
 @bot.message_handler(state="*", commands=['score'])
 def send_scoreboard(message: types.Message, state: StateContext):
     send_scoreboard_for_mode(message, Gamemode.GUESS_THE_LVL)
-    send_scoreboard_for_mode(message, Gamemode.AI_VS_HUMAN)
+    send_scoreboard_for_mode(message, Gamemode.GUESS_HUMAN_OR_AI)
 
     select_gamemode_message(message, state)
 
@@ -72,7 +72,7 @@ def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
 @bot.message_handler(state="*", commands=['stats'])
 def send_stats(message: types.Message, state: StateContext):
     send_stats_for_mode(message, Gamemode.GUESS_THE_LVL)
-    send_stats_for_mode(message, Gamemode.AI_VS_HUMAN)
+    send_stats_for_mode(message, Gamemode.GUESS_HUMAN_OR_AI)
 
     select_gamemode_message(message, state)
 
@@ -177,11 +177,11 @@ def answer_HAI(message: types.Message, state: StateContext):
 
     correct_anwer = "Человек" if hai_data["is_human"] else "Бездушная машина 🤖"
     if message.text == correct_anwer:
-        user_statistics_storage.AddWin(user_id, Gamemode.AI_VS_HUMAN)
+        user_statistics_storage.AddWin(user_id, Gamemode.GUESS_HUMAN_OR_AI)
         bot.send_message(user_id, "Верно! 🎉")
         users_states[user_id] = None
     else:
-        user_statistics_storage.AddFail(user_id, Gamemode.AI_VS_HUMAN)
+        user_statistics_storage.AddFail(user_id, Gamemode.GUESS_HUMAN_OR_AI)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯" + "\n")
     
     choose_next_action(message)
@@ -200,7 +200,7 @@ def HAI_guess_buttons(message: types.Message, state: StateContext):
 
 def guess_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
-    question_id = get_next_question_id(user_id, Gamemode.AI_VS_HUMAN)
+    question_id = get_next_question_id(user_id, Gamemode.GUESS_HUMAN_OR_AI)
     hai_data = get_data_by_id(question_id)
     if hai_data == None:
         bot.send_message(user_id, "Вы ответили на все вопросы в этом режиме! ✊")
@@ -220,7 +220,7 @@ def gamemode_selecting(message: types.Message, state: StateContext):
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(GTLStates.guessing)
         guess_GTL(message, state)
-    elif message.text == to_string(Gamemode.AI_VS_HUMAN):
+    elif message.text == to_string(Gamemode.GUESS_HUMAN_OR_AI):
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(HAIStates.guessing)
         guess_HAI(message, state)
