@@ -3,4 +3,3 @@ aiogram
 APScheduler
 python-decouple
 pytelegrambotapi
-sqlite3
