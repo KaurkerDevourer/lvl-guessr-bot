@@ -2,8 +2,8 @@ from enum import Enum
 from collections import defaultdict
 
 class Gamemode(Enum):
-    GUESS_THE_LVL = 0
-    GUESS_HUMAN_OR_AI = 1
+    GUESS_HUMAN_OR_AI = 0
+    GUESS_THE_LVL = 1
     CHALLENGE = 2
 
 def pretty_name(gamemode: Gamemode) -> str:

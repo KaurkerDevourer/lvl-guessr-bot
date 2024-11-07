@@ -1,0 +1,159 @@
+[{
+    "code": "int sumArray(int arr[], int size) {\n\tint sum = 0;\n\tfor (int i = 0; i < size; ++i) {\n\t\tsum += arr[i];\n\t}\n\treturn sum;\n}",
+    "is_human": false,
+    "lang": "cpp"
+
+}, {
+    "code": "std::vector<int> prefixSum(const std::vector<int>& nums) {\n\tstd::vector<int> result(nums.size());\n\tif (!nums.empty()) {\n\t\tresult[0] = nums[0];\n\t\tfor (size_t i = 1; i < nums.size(); ++i) {\n\t\t\tresult[i] = result[i - 1] + nums[i];\n\t\t}\n\t}\n\treturn result;\n}",
+    "is_human": false,
+    "lang": "cpp"
+
+}, {
+   "code": "static void calcChessboardCorners(Size boardSize, float squareSize, vector<Point3f>& corners)\n{\n\tcorners.resize(0);\n\n\tfor( int i = 0; i < boardSize.height; i++ )\n\t\tfor( int j = 0; j < boardSize.width; j++ )\n\t\t\tcorners.push_back(Point3f(float(j*squareSize),\n\t\t\t\t\t\tfloat(i*squareSize), 0));\n}",
+   "is_human": true,
+   "lang": "cpp"
+}, {
+ "code": "static inline int getMinDistForDict(const aruco::Dictionary& dict) {\n\tconst int dict_size = dict.bytesList.rows;\n\tconst int marker_size = dict.markerSize;\n\tint minDist = marker_size * marker_size;\n\tfor (int i = 0; i < dict_size; i++) {\n\t\tMat row = dict.bytesList.row(i);\n\t\tMat marker = dict.getBitsFromByteList(row, marker_size);\n\t\tfor (int j = 0; j < dict_size; j++) {\n\t\t\tif (j != i) {\n\t\t\t\tminDist = min(dict.getDistanceToId(marker, j), minDist);\n\t\t\t}\n\t\t}\n\t}\n\treturn minDist;\n}",
+ "is_human": true,
+ "lang": "cpp"
+}, {
+  "code": "#include <iostream>\n\nint factorial(int n) {\n\treturn (n == 1 || n == 0) ? 1 : n * factorial(n - 1);\n}\n\nint main() {\n\tint num = 5;\n\tstd::cout << \"factorial \" << num << \": \" << factorial(num) << std::endl;\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "#include <iostream>\n\nbool isEven(int n) {\n\treturn n % 2 == 0;\n}\n\nint main() {\n\tint num = 4;\n\tstd::cout << num << (isEven(num) ? \" even\" : \" not even\") << std::endl;\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "#include <iostream>\n#include <vector>\n\nint findElement(const std::vector<int>& arr, int target) {\n\tfor (size_t i = 0; i < arr.size(); ++i) {\n\t\tif (arr[i] == target) {\n\t\t\treturn i;\n\t\t}\n\t}\n\treturn -1;\n}\n\nint main() {\n\tstd::vector<int> arr = { 1, 2, 3, 4, 5 };\n\tint target = 3;\n\tint index = findElement(arr, target);\n\tstd::cout << \"element is find on index: \" << index << std::endl;\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+ "code": "#include <opencv2/opencv.hpp>\n\nint main() {\n\tcv::Mat image = cv::imread(\"path/to/image.jpg\");\n\tif (image.empty()) {\n\t\tstd::cerr << \"Failed to load image\" << std::endl;\n\t\treturn 1;\n\t}\n\n\tcv::Mat grayImage;\n\tcv::cvtColor(image, grayImage, cv::COLOR_BGR2GRAY);\n\n\tcv::imshow(\"Gray Image\", grayImage);\n\tcv::waitKey(0);\n\n\treturn 0;\n}",
+ "is_human": false,
+ "lang": "cpp"
+}, {
+ "code": "static gboolean\n\tcleanup_and_quit_loop (const gchar * msg, enum AppState state)\n{\n\tif (msg)\n\t\tg_printerr (\"%s\\n\", msg);\n\tif (state > 0)\n\t\tapp_state = state;\n\n\tif (ws_conn) {\n\t\tif (soup_websocket_connection_get_state (ws_conn) ==\n\t\t\tSOUP_WEBSOCKET_STATE_OPEN)\n\t\t\t/* This will call us again */\n\t\t\tsoup_websocket_connection_close (ws_conn, 1000, \"\");\n\t\telse\n\t\t\tg_object_unref (ws_conn);\n\t}\n\n\tif (loop) {\n\t\tg_main_loop_quit (loop);\n\t\tloop = NULL;\n\t}\n\n\t/* To allow usage as a GSourceFunc */\n\treturn G_SOURCE_REMOVE;\n}",
+ "is_human": true,
+ "lang": "cpp"
+}, {
+ "code": "class vectorTools\n{\npublic:\n\tstatic void clearVectorDbl(vector<double> &vecIn)\n\t{\n\t\tvecIn.clear();\n\t}\n\tstatic void clearVectorFloat(vector<float> &vecIn)\n\t{\n\t\tvecIn.clear();\n\t}\n};",
+ "is_human": true,
+ "lang": "cpp"
+}, {
+  "code": "#include <iostream>\n#include <vector>\n\nvoid printVector(const std::vector<int>& vec) {\n    for (const auto& v : vec) {\n        std::cout << v << \" \";\n    }\n    std::cout << std::endl;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "#include <algorithm>\n\nstd::vector<int> findMaxSubarray(const std::vector<int>& arr) {\n    int maxSum = 0, currentSum = 0;\n    std::vector<int> result;\n    for (int num : arr) {\n        currentSum += num;\n        if (currentSum < 0) currentSum = 0;\n        maxSum = std::max(maxSum, currentSum);\n    }\n    return result;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "#include <thread>\n\nvoid worker(int id) {\n    std::cout << \"Worker \" << id << \" started.\" << std::endl;\n    // Simulate work\n    std::this_thread::sleep_for(std::chrono::seconds(1));\n    std::cout << \"Worker \" << id << \" finished.\" << std::endl;\n}\n\nvoid startWorkers() {\n    std::thread t1(worker, 1);\n    std::thread t2(worker, 2);\n    t1.join();\n    t2.join();\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "#include <iostream>\n#include <map>\n\nvoid countFrequencies(const std::vector<int>& nums) {\n    std::map<int, int> freqMap;\n    for (int num : nums) {\n        freqMap[num]++;\n    }\n    for (const auto& pair : freqMap) {\n        std::cout << pair.first << \" -> \" << pair.second << std::endl;\n    }\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "std::string reverseString(const std::string& str) {\n    return std::string(str.rbegin(), str.rend());\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "int main_merge(std::vector<std::string> args) {\n\tusing namespace tea;\n\targs.erase(args.begin());\n\tbool error = false;\n\tfor (std::string& arg : args) {\n\t\tif (arg[0] == '-') {\n\t\t\tstd::string str = \"unknown argument: \";\n\t\t\tstr += arg;\n\t\t\tlog_message(\"E1019\", str);\n\t\t\terror = true;\n\t\t}\n\t}\n\tif (error) {\n\t\treturn 1;\n\t}\n\tnlohmann::json result;\n\tfor (std::string& arg : args) {\n\t\tnlohmann::json more = load_json_file(arg);\n\t\tmerge_json(result, more);\n\t}\n\tstd::cout << result.dump(4) << '\\n';\n\treturn 0;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "void lint_name(const std::string& name) {\n\tif(name.size() == 0) {\n\t\tthrow LintError(\"name is nothing, give it a name\");\n\t}\n\tif(std::isdigit(name[0])) {\n\t\tthrow LintError(\"name cannot start with a number\");\n\t}\n\tif(name[0] == '-')\n\t\tthrow LintError(\"name cannot start with a '-'\");\n\tif(name[0] == '_')\n\t\tthrow LintError(\"name cannot start with '_'\");\n\n\tfor(std::size_t i = 0; i < name.size(); ++i) {\n\t\tif(name[i] >= 'a' && name[i] <= 'z')\n\t\t\tcontinue;\n\t\tif(name[i] >= 'A' && name[i] <= 'Z')\n\t\t\tcontinue;\n\t\tif(name[i] == '_')\n\t\t\tcontinue;\n\t\tif(std::isdigit(name[i]))\n\t\t\tcontinue;\n\t\tstd::string message = \"name cannot have '\";\n\t\tmessage += name[i];\n\t\tmessage += \"' characters\";\n\t\tthrow LintError(message);\n\t}\n\t// it passes\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "void asyncTask() {\n\tboost::asio::io_context io;\n\tboost::asio::steady_timer timer(io, std::chrono::seconds(1));\n\ttimer.async_wait([](const boost::system::error_code&){\n\t\tstd::cout << \"Timer expired!\" << std::endl;\n\t});\n\tio.run();\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "void applyFunction(const std::vector<int>& vec, const std::function<void(int)>& func) {\n\tfor (const auto& v : vec) {\n\t\tfunc(v);\n\t}\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "void writeToFile(const std::string& filename, const std::string& content) {\n\tstd::ofstream ofs(filename);\n\tif (ofs.is_open()) {\n\t\tofs << content;\n\t\tofs.close();\n\t}\n}", 
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "double calculateDistance(double x1, double y1, double x2, double y2) {\n\treturn std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "class Observer {\npublic:\n\tvirtual ~Observer() = default;\n\tvirtual void update(const std::string& message) = 0;\n};\n\nclass Subject {\nprivate:\n\tstd::vector<Observer*> observers;\npublic:\n\tvoid attach(Observer* observer) {\n\t\tobservers.push_back(observer);\n\t}\n\n\tvoid detach(Observer* observer) {\n\t\tobservers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());\n\t}\n\n\tvoid notify(const std::string& message) {\n\t\tfor (Observer* observer : observers) {\n\t\t\tobserver->update(message);\n\t\t}\n\t}\n};\n\nclass ConcreteObserver : public Observer {\nprivate:\n\tstd::string name;\npublic:\n\tConcreteObserver(const std::string& name) : name(name) {}\n\tvoid update(const std::string& message) override {\n\t\tstd::cout << name << \" received message: \" << message << std::endl;\n\t}\n};\n\nint main() {\n\tSubject subject;\n\tConcreteObserver observer1(\"Observer 1\");\n\tConcreteObserver observer2(\"Observer 2\");\n\n\tsubject.attach(&observer1);\n\tsubject.attach(&observer2);\n\n\tsubject.notify(\"Hello Observers!\");\n\n\tsubject.detach(&observer1);\n\tsubject.notify(\"Goodbye Observer 1!\");\n\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "std::vector<Package> CompoundResolve::all_versions(const Dependency &dependency) {\n    std::vector<Package> result;\n    for (auto func : mPackageFinders) {\n        std::vector<Package> list = func(dependency);\n        result.insert(result.end(), list.begin(), list.end());\n    }\n    std::sort(result.begin(), result.end(), [](const Package &a, const Package &b) -> bool {\n        if (a.version != b.version) {\n            return a.version > b.version;\n        }\n        return a.score > b.score;\n    });\n    return result;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "void ExternalConnectionAcceptorImpl::HandleNewConnection(\n\texperimental::ExternalConnectionAcceptor::NewConnectionParameters* p) {\n\tgrpc_core::MutexLock lock(&mu_);\n\tif (shutdown_ || !started_) {\n\t\t// TODO(yangg) clean up.\n\t\tLOG(ERROR) << \"NOT handling external connection with fd \" << p->fd\n\t\t\t       << \", started \" << started_ << \", shutdown \" << shutdown_;\n\t\treturn;\n\t}\n\tif (handler_) {\n\t\thandler_->Handle(p->listener_fd, p->fd, p->read_buffer.c_buffer());\n\t}\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "void heapsort(int* a, int n) {\n\tt_n = n;\n\tcopy(a, a + n, t + 1);\n\tbuild_heap();\n\tfor (int i = 1; i <= n; i++) {\n\t\tswap(t[1], t[n + 1 - i]);\n\t\tt_n--;\n\t\tsift_down(1);\n\t}\n\treverse(t, t + n + 1);\n\tcopy(t, t + n, a);\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "struct activity {\n\tint l, r;\n};\n\nint solve(vector<activity> activities) {\n\tsort(activities.begin(), activities.end(), [](activity a, activity b) {\n\t\treturn a.r < b.r;\n\t});\n\tint cnt = 0, last = 0;\n\tfor (activity a : activities)\n\t\tif (a.l >= last)\n\t\t\tlast = a.r, cnt++;\n\treturn cnt;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "int gcd(int a, int b, int &x, int &y) {\n\tif (a == 0) {\n\t\tx = 0;\n\t\ty = 1;\n\t\treturn b;\n\t}\n\tint x1, y1;\n\tint d = gcd(b % a, a, x1, y1);\n\tx = y1 - (b / a) * x1;\n\ty = x1;\n\treturn d;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "class NumberProcessor {\npublic:\n\tNumberProcessor(const std::vector<int>& numbers) : numbers_(numbers) {}\n\n\tvoid process() {\n\t\tstd::sort(numbers_.begin(), numbers_.end());\n\t\tfor (const auto& num : numbers_) {\n\t\t\tif (is_prime(num)) {\n\t\t\t\tstd::cout << \"Prime: \" << num << std::endl;\n\t\t\t}\n\t\t}\n\t}\n\nprivate:\n\tbool is_prime(int num) {\n\t\tif (num <= 1) return false;\n\t\tfor (int i = 2; i * i <= num; ++i) {\n\t\t\tif (num % i == 0) return false;\n\t\t}\n\t\treturn true;\n\t}\n\n\tstd::vector<int> numbers_;\n};\n\nint main() {\n\tstd::vector<int> numbers = {15, 3, 7, 10, 21, 13, 17};\n\tNumberProcessor processor(numbers);\n\tprocessor.process();\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "void Service::GetData()\n{\n\tzmq::message_t msg;\n\tnlohmann::json json_data;\n\n\twhile (true)\n\t{\n\t\trecv_socket.recv(msg, zmq::recv_flags::none);\n\t\tstd::cout << \"Receiving: \" << msg.to_string() << '\\n';\n\t\ttry\n\t\t{\n\t\t\tjson_data = nlohmann::json::parse(msg.to_string());\n\t\t}\n\t\tcatch (const std::exception& ex)\n\t\t{\n\t\t\tstd::cout << \"error of parsing zmq::message_t msg\" << std::endl;\n\t\t}\n\n\t\ttry\n\t\t{\n\t\t\ttime = json_data[\"time\"];\n\t\t\ttime *= 1e-9;\n\t\t\tvfact = json_data[\"vfact\"];\n\t\t}\n\t\tcatch (const std::exception& ex)\n\t\t{\n\t\t\tstd::cout << \"missing key_value\" << std::endl;\n\t\t}\n\n\t\tvfact_buf += vfact;\n\t\tcount_msg++;\n\n\t\tif (count_msg == 1)\n\t\t\tt0 = time;\n\n\t\tif (time - t0 > dt)\n\t\t{\n\n\t\t\tstd::cout << \"IN CONDITION\\n\";\n\t\t\tv_avg = vfact_buf / count_msg;\n\t\t\tsolver.SetV(v_avg);\n\t\t\ts += v_avg * (time - t0) / 3600;\n\n\t\t\tcount_msg = 0;\n\t\t\tvfact_buf = 0;\n\n\t\t\treturn;\n\t\t}\n\t}\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "bool find_subset(int *a, int n, int w)\n{\n\tfor (int mask = 0; mask < (1 << n); mask++) {\n\t\tint s = 0;\n\t\tfor (int i = 0; i < n; i++)\n\t\t\tif (mask >> i & 1)\n\t\t\t\ts += a[i];\n\t\tif (s == w)\n\t\t\treturn true;\n\t}\n\treturn false;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "template <typename T>\nstruct dynamic_array {\n\tT *t;\n\tint size = 0, capacity;\n\t\ndynamic_array(int capacity) : capacity(capacity) {\n\t\tt = new T[capacity];\n\t}\n\n\tvoid resize(int new_capacity) {\n\t\tT *new_t = new T[new_capacity];\n\t\tmemcpy(new_t, t, sizeof(T) * size);\n\t\tdelete[] t;\n\t\tt = new_t;\n\t}\n\n\tT get(int k) {\n\t\treturn t[k];\n\t}\n\n\tT set(int k, T x) {\n\t\tt[k] = x;\n\t}\n\n\tvoid add(T x) {\n\t\tif (size == capacity)\n\t\t\tresize(2 * capacity);\n\t\tt[size++] = x;\n\t}\n\n\tvoid del() {\n\t\tif (4 * size < capacity)\n\t\t\tresize(capacity / 2);\n\t\tsize--;\n\t}\n};",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "template <typename T>\nclass Matrix {\n\tprivate:\n\t\tint rows, cols;\n\t\tT **data;\n\tpublic:\n\t\tMatrix(int r, int c) : rows(r), cols(c) {\n\t\t\tdata = new T*[rows];\n\t\t\tfor (int i = 0; i < rows; i++) {\n\t\t\t\tdata[i] = new T[cols];\n\t\t\t}\n\t\t}\n\t\t~Matrix() {\n\t\t\tfor (int i = 0; i < rows; i++) {\n\t\t\t\tdelete[] data[i];\n\t\t\t}\n\t\t\tdelete[] data;\n\t\t}\n\t\tT& operator()(int r, int c) {\n\t\t\treturn data[r][c];\n\t\t}\n};",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "class Graph {\n\tprivate:\n\t\tint V;\n\t\tstd::vector<std::vector<int>> adj;\n\tpublic:\n\t\tGraph(int vertices) : V(vertices) {\n\t\t\tadj.resize(V);\n\t\t}\n\t\tvoid addEdge(int u, int v) {\n\t\t\tadj[u].push_back(v);\n\t\t\tadj[v].push_back(u);\n\t\t}\n\t\tvoid DFS(int v) {\n\t\t\tstd::vector<bool> visited(V, false);\n\t\t\tDFSUtil(v, visited);\n\t\t}\n\t\tvoid DFSUtil(int v, std::vector<bool> &visited) {\n\t\t\tvisited[v] = true;\n\t\t\tstd::cout << v << \" \";\n\t\t\tfor (int i : adj[v]) {\n\t\t\t\tif (!visited[i])\n\t\t\t\t\tDFSUtil(i, visited);\n\t\t\t}\n\t\t}\n};",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "threadFunction(int id) {\n\tstd::cout << \"Thread \" << id << \" is running.\\n\";\n}\n\nclass ThreadManager {\n\tprivate:\n\t\tstd::vector<std::thread> threads;\n\tpublic:\n\t\tvoid createThreads(int num) {\n\t\t\tfor (int i = 0; i < num; i++) {\n\t\t\t\tthreads.emplace_back(threadFunction, i);\n\t\t\t}\n\t\t}\n\t\tvoid joinThreads() {\n\t\t\tfor (auto &t : threads) {\n\t\t\t\tt.join();\n\t\t\t}\n\t\t}\n};",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "typedef vector< vector<double> > matrix;\n\nvector<double> gauss(matrix a) {\n\tint n = (int) a.size();\n\tfor (int i = 0; i < n; i++) {\n\t\tint best = i;\n\t\tfor (int j = i + 1; j < n; j++)\n\t\t\tif (abs(a[j][i]) > abs(a[best][i]))\n\t\t\t\tbest = j;\n\t\tswap(a[best], a[i]);\n\t\tfor (int j = n; j >= i; j--)\n\t\t\ta[i][j] /= a[i][i];\n\t\tfor (int j = 0; j < n; j++)\n\t\t\tif (j != i)\n\t\t\t\tfor (int k = n; k >= i; k--)\n\t\t\t\t\ta[j][k] -= a[i][k] * a[j][i];\n\t}\n\tvector<double> ans(n);\n\tfor (int i = 0; i < n; i++)\n\t\tans[i] = a[i][n];\n\treturn ans;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "typedef long long ll;\n\ninline ll f(ll x, ll n) { return (__int128_t) (x + 1) * (x + 1) % n; }\n\nll find_divisor(ll n, ll seed = 1) {\n\tll x = seed, y = seed;\n\tll d = 1;\n\twhile (d == 1 || d == n) {\n\t\ty = f(y);\n\t\tx = f(f(x));\n\t\td = gcd(abs(x - y), n);\n\t}\n\treturn d;\n}",
+  "is_human": true,
+  "lang": "cpp"
+}, {
+  "code": "using namespace std;\n\nvoid dfs(int v, vector<bool>& visited, const vector<vector<int>>& graph) {\n\tvisited[v] = true;\n\tcout << v << \" \";\n\tfor (int u : graph[v]) {\n\t\tif (!visited[u]) {\n\t\t\tdfs(u, visited, graph);\n\t\t}\n\t}\n}\n\nint main() {\n\tint n, m;\n\tcout << \"Введите количество вершин и ребер:\";\n\tcin >> n >> m;\n\tvector<vector<int>> graph(n);\n\tcout << \"Введите ребра (формат: вершина1 вершина2):\";\n\tfor (int i = 0; i < m; i++) {\n\t\tint u, v;\n\t\tcin >> u >> v;\n\t\tgraph[u].push_back(v);\n\t\tgraph[v].push_back(u);\n\t}\n\tvector<bool> visited(n, false);\n\tdfs(0, visited, graph);\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "void quickSort(std::vector<int>& arr, int low, int high) {\n\tif (low < high) {\n\t\tint pivot = arr[high];\n\t\tint i = (low - 1);\n\t\tfor (int j = low; j < high; j++) {\n\t\t\tif (arr[j] < pivot) {\n\t\t\t\ti++;\n\t\t\t\tstd::swap(arr[i], arr[j]);\n\t\t\t}\n\t\t}\n\t\tstd::swap(arr[i + 1], arr[high]);\n\t\tint pi = i + 1;\n\n\t\tquickSort(arr, low, pi - 1);\n\t\tquickSort(arr, pi + 1, high);\n\t}\n}\n\nint main() {\n\tstd::vector<int> arr = {10, 7, 8, 9, 1, 5};\n\tint n = arr.size();\n\tquickSort(arr, 0, n - 1);\n\tstd::cout << \"sorted array: \";\n\tfor (int i : arr) {\n\t\tstd::cout << i << \" \";\n\t}\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}, {
+  "code": "int main() {\n\ttry {\n\t\tpqxx::connection C(\"dbname=frc1 user=root password=root host=localhost port=5432\");\n\t\tif (C.is_open()) {\n\t\t\tstd::cout << \"Database connection successfully opened!\" << std::endl;\n\t\t} else {\n\t\t\tstd::cout << \"Failed to open database connection.\" << std::endl;\n\t\t\treturn 1;\n\t\t}\n\t\tC.disconnect();\n\t} catch (const pqxx::sql_error &e) {\n\t\tstd::cerr << \"SQL error: \" << e.what() << std::endl;\n\t\treturn 2;\n\t} catch (const std::exception &e) {\n\t\tstd::cerr << \"error: \" << e.what() << std::endl;\n\t\treturn 3;\n\t}\n\treturn 0;\n}",
+  "is_human": false,
+  "lang": "cpp"
+}]
