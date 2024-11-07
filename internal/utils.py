@@ -48,3 +48,9 @@ def get_data_by_id(data_id: int, gamemode: Gamemode) -> json:
 
     print("WARNING: Unknown gamemode:", gamemode)
     return None
+
+def try_parse_id(id):
+    try:
+        return int(id)
+    except ValueError:
+        return False
