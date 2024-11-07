@@ -6,24 +6,17 @@ def get_next_question_id(user_id: str, gamemode: Gamemode) -> int:
     win, total = user_statistics_storage.Get(user_id, gamemode)
     return total  # 0-based question index
 
-def get_data_by_id(code_id: int) -> json:
-    if code_id >= len(hai_db):
-        print("There is no data with id:", code_id)
-        return None
-    return hai_db[code_id]
+def get_data_by_id(data_id: int, gamemode: Gamemode) -> json:
+    if gamemode == Gamemode.GUESS_THE_LVL:
+        if data_id >= len(questions):
+            print(f"WARNING: There is no data wit id {data_id} for gamemode {gamemode}")
+            return None
 
-def get_question_by_id(question_id) -> json:
-    """
-    questions.json format:
-    {
-        "code": string
-        "is_level": bool
-        "level": string
-        "link": string
-        "author": string
-    }
-    """
-    if question_id >= len(questions):
-        print("There is no question with id:", question_id)
-        return None
-    return questions[question_id]
+        return questions[data_id]
+
+    if gamemode == Gamemode.GUESS_HUMAN_OR_AI:
+        if data_id >= len(hai_db):
+            print(f"WARNING: There is no data wit id {data_id} for gamemode {gamemode}")
+            return None
+
+        return hai_db[data_id]
