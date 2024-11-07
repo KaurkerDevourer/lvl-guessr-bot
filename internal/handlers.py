@@ -110,23 +110,24 @@ def choose_next_action(message: types.Message):
 @bot.message_handler(state=GTLStates.answering)
 def answer_GTL(message, state: StateContext):
     user_id = message.from_user.id
-    user_state = users_states.get(user_id)
+    gtl_data = users_states.get(user_id)
 
-    if user_state == None:
+    if gtl_data == None:
         print("WARNING: User state is None")
         bot.send_message(user_id, "Что-то пошло не так -_-")
         return
 
-    if message.text == user_state["correct_answer"]:
+    correct_answer = gtl_data["level"]
+    if message.text == correct_answer:
         user_statistics_storage.AddWin(user_id, Gamemode.GUESS_THE_LVL)
         bot.send_message(user_id, "Верно! 🎉\n")
         users_states[user_id] = None
     else:
         user_statistics_storage.AddFail(user_id, Gamemode.GUESS_THE_LVL)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯." + "\n")
-        bot.send_message(user_id, f'Правильный ответ: {user_state["correct_answer"]}\n')
-    bot.send_message(user_id, f'Пояснение: {user_state["question"]["solution"]}\n')
-    bot.send_message(user_id, f'Ссылка: {user_state["question"]["link"]}\n')
+        bot.send_message(user_id, f'Правильный ответ: {correct_answer}\n')
+    bot.send_message(user_id, f'Пояснение: {gtl_data["solution"]}\n')
+    bot.send_message(user_id, f'Ссылка: {gtl_data["link"]}\n')
 
     choose_next_action(message)
     state.set(GTLStates.cancel_or_not)
@@ -157,12 +158,9 @@ def guess_GTL(message: types.Message, state):
         select_gamemode_message(message, state)
         return
 
-    users_states[user_id] = {
-        "question": data,
-        "correct_answer": data["level"]
-    }
+    users_states[user_id] = data
 
-    bot.send_message(message.from_user.id, '```' + data["lang"] + '\n' + data["code"] + '```', parse_mode='Markdown')
+    bot.send_message(user_id, '```' + data["lang"] + '\n' + data["code"] + '```', parse_mode='Markdown')
 
     GTL_guess_buttons(message, state, data)
 
@@ -184,7 +182,7 @@ def answer_HAI(message: types.Message, state: StateContext):
     else:
         user_statistics_storage.AddFail(user_id, Gamemode.GUESS_HUMAN_OR_AI)
         bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯" + "\n")
-    
+
     choose_next_action(message)
     state.set(HAIStates.cancel_or_not)
     state.add_data(cancel_or_not = "HAI")
@@ -202,17 +200,17 @@ def HAI_guess_buttons(message: types.Message, state: StateContext):
 def guess_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
     question_id = get_next_question_id(user_id, Gamemode.GUESS_HUMAN_OR_AI)
-    hai_data = get_data_by_id(question_id, Gamemode.GUESS_HUMAN_OR_AI)
-    if hai_data == None:
+    data = get_data_by_id(question_id, Gamemode.GUESS_HUMAN_OR_AI)
+    if data == None:
         print(f"WARNING: There is no more questions for user: {message.from_user.username}")
         bot.send_message(user_id, "Вы ответили на все вопросы в этом режиме! ✊")
 
         select_gamemode_message(message, state)
         return
 
-    bot.send_message(user_id, '```' + hai_data["lang"] + '\n' + hai_data["code"] + '```', parse_mode='Markdown')
+    bot.send_message(user_id, '```' + data["lang"] + '\n' + data["code"] + '```', parse_mode='Markdown')
 
-    users_states[user_id] = hai_data
+    users_states[user_id] = data
 
     HAI_guess_buttons(message, state)
 
