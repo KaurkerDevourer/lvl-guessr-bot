@@ -23,14 +23,14 @@ class HAIStates(StatesGroup):
 
 users_states = {}
 
-def finish_the_game(message, state: StateContext):
+def finish_the_game(message: types.Message, state: StateContext):
     state.delete()
     bot.delete_state(message.from_user.id)
     markup = types.ReplyKeyboardRemove()
     bot.send_message(message.from_user.id, "Спасибо за игру! 🚀", reply_markup=markup)
 
 @bot.message_handler(state="*", commands=["stop"])
-def stop_game(message, state: StateContext):
+def stop_game(message: types.Message, state: StateContext):
     finish_the_game(message, state)
 
 def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
@@ -51,7 +51,7 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
     bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {gamemode.name}:\n{scoreboard_info}")
 
 @bot.message_handler(state="*", commands=['score'])
-def send_scoreboard(message, state: StateContext):
+def send_scoreboard(message: types.Message, state: StateContext):
     send_scoreboard_for_mode(message, Gamemode.GUESS_THE_LVL)
     send_scoreboard_for_mode(message, Gamemode.AI_VS_HUMAN)
 
@@ -69,14 +69,14 @@ def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
     bot.send_message(user_id, stat_info)
 
 @bot.message_handler(state="*", commands=['stats'])
-def send_stats(message, state: StateContext):
+def send_stats(message: types.Message, state: StateContext):
     send_stats_for_mode(message, Gamemode.GUESS_THE_LVL)
     send_stats_for_mode(message, Gamemode.AI_VS_HUMAN)
 
     select_gamemode_message(message, state)
 
 @bot.message_handler(state=[GTLStates.cancel_or_not, HAIStates.cancel_or_not])
-def cancel_or_not(message, state: StateContext):
+def cancel_or_not(message: types.Message, state: StateContext):
     if message.text == "Нет, хватит.":
         finish_the_game(message, state)
         return
@@ -98,7 +98,7 @@ def cancel_or_not(message, state: StateContext):
 
     print("WARNING: Unknown state:", state)
 
-def choose_next_action(message):
+def choose_next_action(message: types.Message):
     btn1 = types.KeyboardButton('Давай дальше!')
     btn2 = types.KeyboardButton('Нет, хватит.')
 
@@ -131,7 +131,7 @@ def answer_GTL(message, state: StateContext):
     state.set(GTLStates.cancel_or_not)
     state.add_data(cancel_or_not = "GTL")
 
-def GTL_guess_buttons(message, state: StateContext, question):
+def GTL_guess_buttons(message: types.Message, state: StateContext, question):
     state.set(GTLStates.answering)
 
     levels = ["Junior", "Middle", "Senior", "Lead"]
@@ -145,7 +145,7 @@ def GTL_guess_buttons(message, state: StateContext, question):
     markup.add(*buttons)
     bot.send_message(message.from_user.id, "Quess the level!", reply_markup=markup)
 
-def guess_GTL(message, state):
+def guess_GTL(message: types.Message, state):
     user_id = message.from_user.id
     question_id = get_next_question_id(user_id, Gamemode.GUESS_THE_LVL)
     question = get_question_by_id(question_id)
@@ -165,7 +165,7 @@ def guess_GTL(message, state):
     GTL_guess_buttons(message, state, question)
 
 @bot.message_handler(state=HAIStates.answering)
-def answer_HAI(message, state: StateContext):
+def answer_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
     hai_data = users_states.get(user_id)
 
@@ -187,7 +187,7 @@ def answer_HAI(message, state: StateContext):
     state.set(HAIStates.cancel_or_not)
     state.add_data(cancel_or_not = "HAI")
 
-def HAI_guess_buttons(message, state: StateContext):
+def HAI_guess_buttons(message: types.Message, state: StateContext):
     state.set(HAIStates.answering)
 
     candidates = ["Человек", "Бездушная машина 🤖"]
@@ -197,7 +197,7 @@ def HAI_guess_buttons(message, state: StateContext):
 
     bot.send_message(message.from_user.id, "Угадай, человек или ИИ написал этот код?", reply_markup=markup)
 
-def guess_HAI(message, state: StateContext):
+def guess_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
     question_id = get_next_question_id(user_id, Gamemode.AI_VS_HUMAN)
     hai_data = get_data_by_id(question_id)
@@ -214,7 +214,7 @@ def guess_HAI(message, state: StateContext):
     HAI_guess_buttons(message, state)
 
 @bot.message_handler(state=GameStates.gamemode_selecting)
-def gamemode_selecting(message, state: StateContext):
+def gamemode_selecting(message: types.Message, state: StateContext):
     if message.text == "Guess the Level":
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(GTLStates.guessing)
@@ -224,7 +224,7 @@ def gamemode_selecting(message, state: StateContext):
         state.set(HAIStates.guessing)
         guess_HAI(message, state)
 
-def select_gamemode_message(message, state: StateContext):
+def select_gamemode_message(message: types.Message, state: StateContext):
     state.set(GameStates.gamemode_selecting)
 
     gamemodes = ["Guess the Level", "Human vs AI"]
@@ -233,7 +233,7 @@ def select_gamemode_message(message, state: StateContext):
     bot.send_message(message.from_user.id, "Выберите режим игры:", reply_markup=markup)
 
 @bot.message_handler(commands=['start', 'help'])
-def send_welcome(message, state: StateContext):
+def send_welcome(message: types.Message, state: StateContext):
     bot.send_message(message.from_user.id, "Добро пожаловать в игру Guess the Something! 🚀\n\n")
 
     select_gamemode_message(message, state)

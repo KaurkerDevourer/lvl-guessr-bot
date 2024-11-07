@@ -67,4 +67,3 @@ class UserStatisticsStorage:
             "LIMIT ? ", (gamemode.name, limit))
         
         return self.cursor.fetchall()
-
