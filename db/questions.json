@@ -1,0 +1,55 @@
+[{
+    "lang": "cpp",
+    "code": "bool DpSeamFinder::hasOnlyOneNeighbor(int c)\n{\n\tset<pair<int, int> >::iterator begin, end;\n\tbegin = lower_bound(edges_.begin(), edges_.end(), make_pair(c, numeric_limits<int>::min()));\n\tend = upper_bound(edges_.begin(), edges_.end(), make_pair(c, numeric_limits<int>::max()));\n\treturn ++begin == end;\n}",
+    "link": "https://github.com/opencv/opencv/commit/a39bce204d05e382f99cfb8819bf78b83b5f15c7#diff-97136964200ed5e9e1bcf2a93909ad815af31930731100078776025db87b7af3R526",
+    "is_level": true,
+    "level": "Lead",
+    "solution": "https://github.com/opencv/opencv/pull/21598",
+    "author": "https://www.linkedin.com/in/alexeyspizhevoy/"
+},
+{
+    "lang": "cpp",
+    "code": "```if (0 < i || i >= cc_ctx->num_outputs()) {\n\tTF_SetStatus(status, TF_INVALID_ARGUMENT, \"output index out of range\");\n}```",
+    "link": "https://github.com/tensorflow/tensorflow/commit/d0e86e50b2a1e5f0889a0af3e45b090a3e45531d#diff-43e4671c00a34f15d33684709806b883cba81f676f230f9283f784045f5dbcd6R201",
+    "is_level": true,
+    "level": "Senior",
+    "solution": "https://github.com/tensorflow/tensorflow/pull/56939/files",
+    "author": "https://github.com/sjamesr"
+},
+{
+"lang": "cpp",
+"code": "```if (find_if(joinColumns.begin(), joinColumns.end(), [&] (const TString& s) { return node->Stats->KeyColumns[0] == s;})) {\n\treturn true;\n}```",
+"link": "https://github.com/ydb-platform/ydb/commit/a26ebd7d10133f3a00ed3d26f20b466353a8aff5#diff-6cefa5a3f132f45ba6bf9ed88bd0d2fecbc1c27c9e09cbd8d6f91284ddce0601R1234",
+"is_level": true,
+"level": "Lead",
+"solution": "https://github.com/ydb-platform/ydb/pull/2640/files#diff-6cefa5a3f132f45ba6bf9ed88bd0d2fecbc1c27c9e09cbd8d6f91284ddce0601R1237",
+"author": "https://www.linkedin.com/in/velikhov/"
+},
+{
+    "lang": "cpp",
+    "code": "BlockIO & operator= (const BlockIO & rhs)\n{\n\tout.reset();\n\tin.reset();\n\tprocess_list_entry.reset();\n\tprocess_list_entry      = rhs.process_list_entry;\n\tin                      = rhs.in;\n\tout                     = rhs.out;\n\tfinish_callback         = rhs.finish_callback;\n\texception_callback      = rhs.exception_callback;\n\treturn *this;\n}",
+    "link": "https://github.com/ClickHouse/ClickHouse/commit/1ba32c6fbbaa0a837cefafc2930ca1785dfba871",
+    "is_level": true,
+    "level": "Lead",
+    "solution": "https://github.com/ClickHouse/ClickHouse/pull/4920/files",
+    "author": "https://www.linkedin.com/in/alexey-milovidov-7b658135/"
+},
+{
+    "lang": "cpp",
+    "code": "size_t values_size = 0;\nfor (size_t i = 0; i < array_size; ++i)\n\tvalues_size += getData().serializeValueIntoArena(offset + i, arena, begin).size;\nreturn StringRef(begin, sizeof(array_size) + values_size);",
+    "link": "https://github.com/ClickHouse/ClickHouse/commit/f9a5902e769acc294693c379ed060ce07ffbbe10#diff-7d186184480b8d5ad2a6a3c706d38acce0de189fef08c8252ccc029a17ec33f5R171",
+    "is_level": true,
+    "level": "Lead",
+    "solution": "https://github.com/ClickHouse/ClickHouse/pull/5973/files",
+    "author": "https://www.linkedin.com/in/alexey-milovidov-7b658135//"
+}, 
+{
+    "lang": "cpp",
+    "code": "void RemoteBlockInputStream::tryCancel(const char * reason)\n{\n\tbool old_val = false;\n\tif (!was_cancelled.compare_exchange_strong(old_val, true, std::memory_order_seq_cst, std::memory_order_relaxed))\n\t\treturn;\n\tmultiplexed_connections->sendCancel();\n}",
+    "link": "Missed in history",
+    "is_level": true,
+    "level": "Lead",
+    "solution": "https://github.com/ClickHouse/ClickHouse/pull/10239",
+    "author": "https://www.linkedin.com/in/alexey-milovidov-7b658135//"
+}
+]

@@ -1,7 +1,6 @@
 *.history*
 token.txt
-db/*.json
-db/*/*.json
+db/user_statistics.json
 db/*.db
 
 .idea/
