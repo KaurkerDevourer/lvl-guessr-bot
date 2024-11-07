@@ -3,7 +3,7 @@ from telebot.states import State, StatesGroup
 from telebot.states.sync.context import StateContext
 
 from internal import bot
-from internal.utils import get_next_question_id, get_question_by_id, get_data_by_id
+from internal.utils import get_next_question_id, get_data_by_id, get_data_by_id
 from internal.gamemode import Gamemode
 from internal.gamemode import to_string
 from . import user_statistics_storage
@@ -149,21 +149,22 @@ def GTL_guess_buttons(message: types.Message, state: StateContext, question):
 def guess_GTL(message: types.Message, state):
     user_id = message.from_user.id
     question_id = get_next_question_id(user_id, Gamemode.GUESS_THE_LVL)
-    question = get_question_by_id(question_id)
-    if question == None:
+    data = get_data_by_id(question_id, Gamemode.GUESS_THE_LVL)
+    if data == None:
+        print(f"WARNING: There is no more questions for user: {message.from_user.username}")
         bot.send_message(user_id, "Вы ответили на все вопросы в этом режиме! ✊")
         
         select_gamemode_message(message, state)
         return
 
     users_states[user_id] = {
-        "question": question,
-        "correct_answer": question["level"]
+        "question": data,
+        "correct_answer": data["level"]
     }
 
-    bot.send_message(message.from_user.id, '```' + question["lang"] + '\n' + question["code"] + '```', parse_mode='Markdown')
+    bot.send_message(message.from_user.id, '```' + data["lang"] + '\n' + data["code"] + '```', parse_mode='Markdown')
 
-    GTL_guess_buttons(message, state, question)
+    GTL_guess_buttons(message, state, data)
 
 @bot.message_handler(state=HAIStates.answering)
 def answer_HAI(message: types.Message, state: StateContext):
@@ -201,8 +202,9 @@ def HAI_guess_buttons(message: types.Message, state: StateContext):
 def guess_HAI(message: types.Message, state: StateContext):
     user_id = message.from_user.id
     question_id = get_next_question_id(user_id, Gamemode.GUESS_HUMAN_OR_AI)
-    hai_data = get_data_by_id(question_id)
+    hai_data = get_data_by_id(question_id, Gamemode.GUESS_HUMAN_OR_AI)
     if hai_data == None:
+        print(f"WARNING: There is no more questions for user: {message.from_user.username}")
         bot.send_message(user_id, "Вы ответили на все вопросы в этом режиме! ✊")
 
         select_gamemode_message(message, state)
