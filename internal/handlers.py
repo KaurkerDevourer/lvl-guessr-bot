@@ -58,6 +58,11 @@ def send_scoreboard(message: types.Message, state: StateContext):
 
     select_gamemode_message(message, state)
 
+@bot.message_handler(commands=['score'])
+def send_scoreboard_without_session(message: types.Message):
+    send_scoreboard_for_mode(message, Gamemode.GUESS_THE_LVL)
+    send_scoreboard_for_mode(message, Gamemode.GUESS_HUMAN_OR_AI)
+
 def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
     user_id = message.from_user.id
     win, total = user_statistics_storage.Get(user_id, gamemode)
@@ -75,6 +80,29 @@ def send_stats(message: types.Message, state: StateContext):
     send_stats_for_mode(message, Gamemode.GUESS_HUMAN_OR_AI)
 
     select_gamemode_message(message, state)
+
+@bot.message_handler(commands=['stats'])
+def send_stats_without_session(message: types.Message):
+    send_stats_for_mode(message, Gamemode.GUESS_THE_LVL)
+    send_stats_for_mode(message, Gamemode.GUESS_HUMAN_OR_AI)
+
+def help_message():
+    return "Доступные команды:\n" \
+              "/start - начать игру\n" \
+              "/stop - завершить игру\n" \
+              "/score - показать таблицу лидеров\n" \
+              "/stats - показать статистику\n" \
+              "/help - показать это сообщение"
+
+@bot.message_handler(state="*", commands=['help'])
+def send_help(message: types.Message, state: StateContext):
+    bot.send_message(message.from_user.id, help_message())
+
+    select_gamemode_message(message, state)
+
+@bot.message_handler(commands=['help'])
+def send_help(message: types.Message):
+    bot.send_message(message.from_user.id, help_message())
 
 @bot.message_handler(state=[GTLStates.cancel_or_not, HAIStates.cancel_or_not])
 def cancel_or_not(message: types.Message, state: StateContext):
@@ -121,7 +149,7 @@ def answer_GTL(message, state: StateContext):
         users_states[user_id] = None
     else:
         user_statistics_storage.AddFail(user_id, Gamemode.GUESS_THE_LVL)
-        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯." + "\n")
+        bot.send_message(user_id, r"Неверно ¯\_(ツ)_/¯" + "\n")
         bot.send_message(user_id, f'Правильный ответ: {correct_answer}\n')
     bot.send_message(user_id, f'Пояснение: {gtl_data["solution"]}\n')
     bot.send_message(user_id, f'Ссылка: {gtl_data["link"]}\n')
@@ -142,7 +170,7 @@ def GTL_guess_buttons(message: types.Message, state: StateContext, question):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=4)
     markup.add(*buttons)
-    bot.send_message(message.from_user.id, "Quess the level!", reply_markup=markup)
+    bot.send_message(message.from_user.id, "Guess the Level!", reply_markup=markup)
 
 def guess_GTL(message: types.Message, state):
     user_id = message.from_user.id
@@ -230,7 +258,7 @@ def select_gamemode_message(message: types.Message, state: StateContext):
     markup.add(*[types.KeyboardButton(mode) for mode in gamemodes])
     bot.send_message(message.from_user.id, "Выберите режим игры:", reply_markup=markup)
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['start'])
 def send_welcome(message: types.Message, state: StateContext):
     bot.send_message(message.from_user.id, "Добро пожаловать в игру Guess the Something! 🚀\n\n")
 
