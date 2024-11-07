@@ -5,6 +5,7 @@ from telebot.states.sync.context import StateContext
 from internal import bot
 from internal.utils import get_next_question_id, get_question_by_id, get_data_by_id
 from internal.gamemode import Gamemode
+from internal.gamemode import to_string
 from . import user_statistics_storage
 
 
@@ -39,7 +40,7 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
 
     scoreboard_info = ""
     if (scoreboard == None):
-        bot.send_message(message.from_user.id, f"Рейтинг {gamemode.name} пуст! :(")
+        bot.send_message(message.from_user.id, f"Рейтинг {to_string(gamemode.name)} пуст! :(")
         return
 
     for (user_id, win, total, rank) in scoreboard:
@@ -48,7 +49,7 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
             continue
         scoreboard_info += f"{rank}. @{message.from_user.username} {win}/{total}\n"
 
-    bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {gamemode.name}:\n{scoreboard_info}")
+    bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {to_string(gamemode.name)}:\n{scoreboard_info}")
 
 @bot.message_handler(state="*", commands=['score'])
 def send_scoreboard(message: types.Message, state: StateContext):
@@ -63,9 +64,9 @@ def send_stats_for_mode(message: types.Message, gamemode: Gamemode):
     rank = user_statistics_storage.GetRank(user_id, gamemode)
 
     if rank == None:
-        bot.send_message(user_id, f"Ты ещё не сыграл в {gamemode.name}!")
+        bot.send_message(user_id, f"Ты ещё не сыграл в {to_string(gamemode.name)}!")
         return
-    stat_info = f"Твои успехи в {gamemode.name}: {win}/{total} (Место в рейтинге: {rank})\n"
+    stat_info = f"Твои успехи в {to_string(gamemode.name)}: {win}/{total} (Место в рейтинге: {rank})\n"
     bot.send_message(user_id, stat_info)
 
 @bot.message_handler(state="*", commands=['stats'])
@@ -215,11 +216,11 @@ def guess_HAI(message: types.Message, state: StateContext):
 
 @bot.message_handler(state=GameStates.gamemode_selecting)
 def gamemode_selecting(message: types.Message, state: StateContext):
-    if message.text == "Guess the Level":
+    if message.text == to_string(Gamemode.GUESS_THE_LVL):
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(GTLStates.guessing)
         guess_GTL(message, state)
-    elif message.text == "Human vs AI":
+    elif message.text == to_string(Gamemode.AI_VS_HUMAN):
         bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(HAIStates.guessing)
         guess_HAI(message, state)
@@ -227,7 +228,7 @@ def gamemode_selecting(message: types.Message, state: StateContext):
 def select_gamemode_message(message: types.Message, state: StateContext):
     state.set(GameStates.gamemode_selecting)
 
-    gamemodes = ["Guess the Level", "Human vs AI"]
+    gamemodes = [to_string(gamemode) for gamemode in Gamemode]
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add(*[types.KeyboardButton(mode) for mode in gamemodes])
     bot.send_message(message.from_user.id, "Выберите режим игры:", reply_markup=markup)
