@@ -9,7 +9,7 @@
 },
 {
     "lang": "cpp",
-    "code": "```if (0 < i || i >= cc_ctx->num_outputs()) {\n\tTF_SetStatus(status, TF_INVALID_ARGUMENT, \"output index out of range\");\n}```",
+    "code": "if (0 < i || i >= cc_ctx->num_outputs()) {\n\tTF_SetStatus(status, TF_INVALID_ARGUMENT, \"output index out of range\");\n}",
     "link": "https://github.com/tensorflow/tensorflow/commit/d0e86e50b2a1e5f0889a0af3e45b090a3e45531d#diff-43e4671c00a34f15d33684709806b883cba81f676f230f9283f784045f5dbcd6R201",
     "is_level": true,
     "level": "Senior",
@@ -17,13 +17,13 @@
     "author": "https://github.com/sjamesr"
 },
 {
-"lang": "cpp",
-"code": "```if (find_if(joinColumns.begin(), joinColumns.end(), [&] (const TString& s) { return node->Stats->KeyColumns[0] == s;})) {\n\treturn true;\n}```",
-"link": "https://github.com/ydb-platform/ydb/commit/a26ebd7d10133f3a00ed3d26f20b466353a8aff5#diff-6cefa5a3f132f45ba6bf9ed88bd0d2fecbc1c27c9e09cbd8d6f91284ddce0601R1234",
-"is_level": true,
-"level": "Lead",
-"solution": "https://github.com/ydb-platform/ydb/pull/2640/files#diff-6cefa5a3f132f45ba6bf9ed88bd0d2fecbc1c27c9e09cbd8d6f91284ddce0601R1237",
-"author": "https://www.linkedin.com/in/velikhov/"
+    "lang": "cpp",
+    "code": "if (find_if(joinColumns.begin(), joinColumns.end(), [&] (const TString& s) { return node->Stats->KeyColumns[0] == s;})) {\n\treturn true;\n}",
+    "link": "https://github.com/ydb-platform/ydb/commit/a26ebd7d10133f3a00ed3d26f20b466353a8aff5#diff-6cefa5a3f132f45ba6bf9ed88bd0d2fecbc1c27c9e09cbd8d6f91284ddce0601R1234",
+    "is_level": true,
+    "level": "Lead",
+    "solution": "https://github.com/ydb-platform/ydb/pull/2640/files#diff-6cefa5a3f132f45ba6bf9ed88bd0d2fecbc1c27c9e09cbd8d6f91284ddce0601R1237",
+    "author": "https://www.linkedin.com/in/velikhov/"
 },
 {
     "lang": "cpp",
