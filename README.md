@@ -26,8 +26,19 @@ This mode allows you to generate a static sequence of questions (Challenges) fro
 The Challenge can be solved asynchronously, and at any time you can query the results of all participants in the current Challenge by unique number.
 
 ## How to run it
+
+### Prerequisites
+1. Create a Telegram bot (here: [@BotFather](https://t.me/botfather)) and get a unique token.
+2. Place a unique token in the token.txt file in the root of the project.
+3. Install dependencies:
 ```
-python -m venv /path/to/venv
+python3 -m venv /path/to/venv
 source /path/to/venv
 pip install -r requirements.txt
+python3 main.py
+```
+
+### Run
+```
+python3 main.py
 ```
