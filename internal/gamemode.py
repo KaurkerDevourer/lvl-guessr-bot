@@ -12,7 +12,7 @@ def pretty_name(gamemode: Gamemode) -> str:
     if gamemode == Gamemode.GUESS_HUMAN_OR_AI:
         return "🤖 Guess: Human or AI"
     if gamemode == Gamemode.CHALLENGE:
-        return "CHALLENGE"
+        return "💪 Challenge Menu"
 
     print("WARNING: Unknown gamemode:", gamemode)
     return "Unknown"

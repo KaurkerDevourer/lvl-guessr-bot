@@ -260,11 +260,11 @@ def guess_HAI(message: types.Message, state: StateContext):
     HAI_guess_buttons(message, state)
 
 def challenge_selecting_buttons(message: types.Message, state: StateContext):
-    choices = ["Начать новый челлендж!", "Ввести Id Челленджа!", "Узнать Результат Челленджа!"]
+    choices = ["💪 Создать новый", "➡ Присоединиться", "📜 Результаты"]
     buttons = [types.KeyboardButton(choice) for choice in choices]
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
     markup.add(*buttons)
-    bot.send_message(message.from_user.id, "Выбери что ты хочешь", reply_markup=markup)
+    bot.send_message(message.from_user.id, "Ваш выбор, капитан...", reply_markup=markup)
 
 
 def generate_new_challenge(message, state):
@@ -273,42 +273,46 @@ def generate_new_challenge(message, state):
     random.shuffle(indexes)
     questionIds = indexes[:3]
     challengeId = challenge_storage.AddChallenge(questionIds, False)
-    bot.send_message(message.from_user.id, "Твой код челеленджа: " + str(challengeId) +"\nПередай его другу!", reply_markup=markup)
+    bot.send_message(message.from_user.id, f"Ваш id челеленджа: `{challengeId}` \nПоделитесь им с друзьями!", reply_markup=markup, parse_mode='Markdown')
     select_gamemode_message(message, state)
 
 
 @bot.message_handler(state=ChallengeStates.selecting)
 def challenge_selecting(message: types.Message, state: StateContext):
-    if message.text == "Начать новый челлендж!":
+    if message.text == "💪 Создать новый":
         state.set(ChallengeStates.new_challenge)
         generate_new_challenge(message, state)
-    elif message.text == "Ввести Id Челленджа!":
+    elif message.text == "➡ Присоединиться":
         state.set(ChallengeStates.do_challenge)
-        bot.send_message(message.from_user.id, "Введи Айди Челленджа")
-    elif message.text == "Узнать Результат Челленджа!":
+        markup = types.ReplyKeyboardRemove()
+        bot.send_message(message.from_user.id, "Введите id 👇", reply_markup=markup)
+    elif message.text == "📜 Результаты":
         state.set(ChallengeStates.challenge_result)
-        bot.send_message(message.from_user.id, "Введи Айди Челленджа!")
+        markup = types.ReplyKeyboardRemove()
+        bot.send_message(message.from_user.id, "Введите id 👇", reply_markup=markup)
 
 @bot.message_handler(state=ChallengeStates.challenge_result)
 def challenge_result(message: types.Message, state: StateContext):
-    print("my tut stoim")
     challenge_id = try_parse_id(message.text)
     if not challenge_id:
-        bot.send_message(message.from_user.id, "Введите Айди корректно, плз!")
-        return
+        bot.send_message(message.from_user.id, "id должен быть числом!")
+        state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
+        return 
 
     challenge = challenge_storage.GetChallenge(challenge_id)
     if challenge is None:
-        bot.send_message(message.from_user.id, "Такого челленджа нет!")
+        bot.send_message(message.from_user.id, "Такого челленджа нет 🫠")
+        state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
         return
 
     data = challenge_storage.GetChallengeResultsByChallengeId(challenge[0])
-    print(data)
     scoreboard_info = ""
     data.sort(reverse=True)
     for (result, user_id) in data:
         user_info = bot.get_chat(user_id)
-        line = f"{user_info.username} Результат: {result}\n"
+        line = f"{user_info.username}: верно угадано {result}\n"
         scoreboard_info += line
 
     bot.send_message(message.from_user.id, f"* Результат челленджа #{challenge_id} *:\n{scoreboard_info}", parse_mode='Markdown')
@@ -319,12 +323,16 @@ def challenge_result(message: types.Message, state: StateContext):
 def do_challenge(message: types.Message, state: StateContext):
     challenge_id = try_parse_id(message.text)
     if not challenge_id:
-        bot.send_message(message.from_user.id, "Введите Айди корректно, плз!")
-        return
+        bot.send_message(message.from_user.id, "id должен быть числом!")
+        state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
+        return 
 
     challenge = challenge_storage.GetChallenge(challenge_id)
     if challenge is None:
-        bot.send_message(message.from_user.id, "Такого челленджа нет!")
+        bot.send_message(message.from_user.id, "Такого челленджа нет 🫠")
+        state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
         return
 
     user_id = message.from_user.id
@@ -342,7 +350,8 @@ def do_challenge(message: types.Message, state: StateContext):
 def send_next_question(user_id, message, state):
     user_state = users_states.get(user_id)
     if user_state is None:
-        bot.send_message(user_id, "Ошибка! Вы не начали челлендж.")
+        bot.send_message(user_id, "Ошибка! Вы не начали челлендж 🫠")
+        print("ERROR: challenge logic is broken")
         return
 
     current_question = user_state["current_question"]
@@ -359,7 +368,8 @@ def send_next_question(user_id, message, state):
 def handle_answer(message: types.Message, state: StateContext):
     user_id = message.from_user.id
     if user_id not in users_states:
-        bot.send_message(user_id, "Вы не начали челлендж!")
+        bot.send_message(user_id, "Ошибка! Вы не начали челлендж 🫠")
+        print("ERROR: challenge logic is broken")
         return
     user_state = users_states.get(user_id)
     current_question = user_state["current_question"]
@@ -373,7 +383,8 @@ def handle_answer(message: types.Message, state: StateContext):
         user_state["result"] +=1
     users_states[user_id]["current_question"] = current_question + 1
     if current_question + 1 >= len(challenge_questions):
-        bot.send_message(user_id, "Челлендж завершен!\nРезультат записан!")
+        bot.send_message(user_id, "Челлендж завершен!\nРезультат записан! 😉")
+        bot.send_message(user_id, f"Убедитесь, что друзья прошли челлендж и посмотрите результаты в меню")
         challenge_id = user_state["challenge_id"]
         challenge_storage.AddChallengeResult(challenge_id, user_id,user_state["result"])
         select_gamemode_message(message, state)
@@ -393,7 +404,6 @@ def gamemode_selecting(message: types.Message, state: StateContext):
         state.set(HAIStates.guessing)
         guess_HAI(message, state)
     elif message.text == pretty_name(Gamemode.CHALLENGE):
-        bot.send_message(message.from_user.id, 'Поехали! 🚀')
         state.set(ChallengeStates.selecting)
         challenge_selecting_buttons(message, state)
 
