@@ -60,10 +60,10 @@ def send_scoreboard_for_mode(message: types.Message, gamemode: Gamemode):
     for (username, win, total, rank) in scoreboard:
         line = f"{rank}. {username}: верно угадано {win} из {total}\n"
         if username == message.from_user.username:
-            line = f"*{line}*"
+            line = f"Вы -> {line}"
         scoreboard_info += line
 
-    bot.send_message(message.from_user.id, f"Топ-{limit} в режиме *{pretty_name(gamemode)}*:\n{scoreboard_info}", parse_mode='Markdown')
+    bot.send_message(message.from_user.id, f"Топ-{limit} в режиме {pretty_name(gamemode)}:\n{scoreboard_info}")
 
 @bot.message_handler(state="*", commands=['score'])
 def send_scoreboard(message: types.Message, state: StateContext):
