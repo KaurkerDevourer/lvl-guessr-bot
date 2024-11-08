@@ -260,7 +260,7 @@ def guess_HAI(message: types.Message, state: StateContext):
     HAI_guess_buttons(message, state)
 
 def challenge_selecting_buttons(message: types.Message, state: StateContext):
-    choices = ["Создать новый", "Присоединиться", "Результаты"]
+    choices = ["💪 Создать новый", "➡ Присоединиться", "📜 Результаты"]
     buttons = [types.KeyboardButton(choice) for choice in choices]
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
     markup.add(*buttons)
@@ -279,15 +279,17 @@ def generate_new_challenge(message, state):
 
 @bot.message_handler(state=ChallengeStates.selecting)
 def challenge_selecting(message: types.Message, state: StateContext):
-    if message.text == "Создать новый":
+    if message.text == "💪 Создать новый":
         state.set(ChallengeStates.new_challenge)
         generate_new_challenge(message, state)
-    elif message.text == "Присоединиться":
+    elif message.text == "➡ Присоединиться":
         state.set(ChallengeStates.do_challenge)
-        bot.send_message(message.from_user.id, "Введите id 👇")
-    elif message.text == "Результаты":
+        markup = types.ReplyKeyboardRemove()
+        bot.send_message(message.from_user.id, "Введите id 👇", reply_markup=markup)
+    elif message.text == "📜 Результаты":
         state.set(ChallengeStates.challenge_result)
-        bot.send_message(message.from_user.id, "Введите id 👇")
+        markup = types.ReplyKeyboardRemove()
+        bot.send_message(message.from_user.id, "Введите id 👇", reply_markup=markup)
 
 @bot.message_handler(state=ChallengeStates.challenge_result)
 def challenge_result(message: types.Message, state: StateContext):
