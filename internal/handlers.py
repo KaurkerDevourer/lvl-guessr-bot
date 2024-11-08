@@ -289,22 +289,19 @@ def challenge_selecting(message: types.Message, state: StateContext):
         state.set(ChallengeStates.challenge_result)
         bot.send_message(message.from_user.id, "Введите id 👇")
 
-def get_and_check_challenge(message: types.Message):
+@bot.message_handler(state=ChallengeStates.challenge_result)
+def challenge_result(message: types.Message, state: StateContext):
     challenge_id = try_parse_id(message.text)
     if not challenge_id:
         bot.send_message(message.from_user.id, "id должен быть числом!")
-        return
+        state.set(ChallengeStates.selecting)
+        return 
 
     challenge = challenge_storage.GetChallenge(challenge_id)
     if challenge is None:
         bot.send_message(message.from_user.id, "Такого челленджа нет 🫠")
+        state.set(ChallengeStates.selecting)
         return
-
-    return challenge, challenge_id
-
-@bot.message_handler(state=ChallengeStates.challenge_result)
-def challenge_result(message: types.Message, state: StateContext):
-    challenge, challenge_id = get_and_check_challenge(message)
 
     data = challenge_storage.GetChallengeResultsByChallengeId(challenge[0])
     scoreboard_info = ""
@@ -320,7 +317,17 @@ def challenge_result(message: types.Message, state: StateContext):
 
 @bot.message_handler(state=ChallengeStates.do_challenge)
 def do_challenge(message: types.Message, state: StateContext):
-    challenge, challenge_id = get_and_check_challenge(message)
+    challenge_id = try_parse_id(message.text)
+    if not challenge_id:
+        bot.send_message(message.from_user.id, "id должен быть числом!")
+        state.set(ChallengeStates.selecting)
+        return 
+
+    challenge = challenge_storage.GetChallenge(challenge_id)
+    if challenge is None:
+        bot.send_message(message.from_user.id, "Такого челленджа нет 🫠")
+        state.set(ChallengeStates.selecting)
+        return
 
     user_id = message.from_user.id
     # Save challenge questions in the user's state to iterate later
