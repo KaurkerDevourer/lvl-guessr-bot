@@ -295,12 +295,14 @@ def challenge_result(message: types.Message, state: StateContext):
     if not challenge_id:
         bot.send_message(message.from_user.id, "id должен быть числом!")
         state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
         return 
 
     challenge = challenge_storage.GetChallenge(challenge_id)
     if challenge is None:
         bot.send_message(message.from_user.id, "Такого челленджа нет 🫠")
         state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
         return
 
     data = challenge_storage.GetChallengeResultsByChallengeId(challenge[0])
@@ -321,12 +323,14 @@ def do_challenge(message: types.Message, state: StateContext):
     if not challenge_id:
         bot.send_message(message.from_user.id, "id должен быть числом!")
         state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
         return 
 
     challenge = challenge_storage.GetChallenge(challenge_id)
     if challenge is None:
         bot.send_message(message.from_user.id, "Такого челленджа нет 🫠")
         state.set(ChallengeStates.selecting)
+        challenge_selecting_buttons(message, state)
         return
 
     user_id = message.from_user.id
